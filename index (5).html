@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nada Fathy — Cross-Platform Mobile App Developer</title>
+<meta name="description" content="Nada Fathy — Computer Science student at Ain Shams University, building cross-platform mobile apps with Flutter & Dart.">
+<meta name="theme-color" content="#FAF8F5">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nada Fathy — Flutter Developer">
+<meta property="og:description" content="Cross-platform mobile apps, built with Flutter. Clean architecture, local storage, API & AI integration.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Architectural minimalism meets editorial: warm cream base, charcoal ink, terracotta / sand / rose accents. Syne + Inter. */
+:root{
+  --paper:#FAF8F5; --card:#FFFFFF; --paper-dim:#F2E3D5; --ink:#111111; --ink-soft:#3d3d3d;
+  --muted:#666666; --line:#EADFD3; --accent:#E89271; --accent-deep:#c96f4a; --sand:#F2E3D5; --rose:#E4A8A8;
+  --accent-soft:#F9E9DF;
+  --display:'Syne',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --container:1180px; --gutter:clamp(20px,4.5vw,56px); --radius:14px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:clip}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:clip;min-height:100vh;display:flex;flex-direction:column}
+main{flex:1}
+a{color:inherit}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.12;margin:0 0 .5em;letter-spacing:-.01em}
+p{margin:0 0 1em}
+.wrap{max-width:var(--container);margin:0 auto;padding-left:var(--gutter);padding-right:var(--gutter)}
+::selection{background:var(--accent);color:var(--paper)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.skip{position:absolute;left:-9999px;top:0;background:var(--ink);color:var(--paper);padding:10px 16px;z-index:200}
+.skip:focus{left:8px;top:8px}
+
+/* header */
+.site-header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;min-height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-family:var(--display)}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:var(--ink);color:var(--paper);font-size:17px}
+.site-nav ul{display:flex;align-items:center;gap:4px;list-style:none;margin:0;padding:0}
+.site-nav a{text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600;font-size:15px}
+.site-nav a:hover{background:var(--paper-dim)}
+.site-nav a[aria-current="page"]:not(.btn){background:var(--paper-dim)}
+.nav-toggle{display:none;background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:18px;cursor:pointer;color:var(--ink)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border:0;border-radius:999px;padding:13px 28px;font-weight:600;font-size:15.5px;text-decoration:none;cursor:pointer;font-family:var(--body);transition:transform .15s ease,background .15s ease}
+.site-nav a.btn:hover,.btn:hover{background:#000;transform:translateY(-1px)}
+.btn:hover .arr{transform:translateX(3px)}
+.arr{display:inline-block;transition:transform .15s ease}
+.btn-small{padding:8px 18px;font-size:14px}
+.site-nav a.btn{color:#fff}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn-ghost:hover{background:var(--ink);color:#fff}
+.badge-pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 18px;font-weight:600;font-size:13.5px;color:var(--ink-soft);max-width:100%;line-height:1.45}
+.badge-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+
+/* views */
+.spa .view{display:none}
+.spa .view.active{display:block;animation:fade .4s ease}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.page{padding:clamp(40px,6vw,80px) 0 clamp(30px,4vw,56px)}
+.eyebrow{font-family:var(--body);font-weight:700;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-deep);display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--accent);border-radius:2px}
+.page h1.title,.page h2.title{font-size:clamp(32px,5vw,56px);font-weight:800;letter-spacing:-.02em;max-width:18ch}
+.lede{font-size:clamp(17px,2.2vw,21px);color:var(--ink-soft);max-width:62ch}
+
+/* hero */
+.hero-split{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,72px);align-items:center;padding:clamp(48px,7vw,100px) 0 clamp(30px,4vw,50px)}
+.hero-copy h1{font-size:clamp(40px,7vw,88px);font-weight:800;letter-spacing:-.02em;margin:.15em 0 .1em;overflow-wrap:break-word;text-wrap:balance}
+.hero-sub{font-family:var(--display);font-weight:700;font-size:clamp(13px,2vw,20px);letter-spacing:.22em;color:var(--ink);margin:0 0 18px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;pointer-events:none}
+.hero-visual{position:relative;min-height:440px}
+.arch-frame{position:relative;width:min(76%,330px);aspect-ratio:3/4.1;border-radius:26px 26px 999px 999px;overflow:hidden;background:linear-gradient(160deg,var(--sand),var(--rose));border:1px solid var(--line);box-shadow:0 30px 60px -30px rgba(17,17,17,.35)}
+.arch-mono{display:grid;place-items:center;width:100%;height:100%;font-family:var(--display);font-weight:800;font-size:clamp(90px,14vw,150px);color:#fff;letter-spacing:-.04em}
+.poster-card{position:absolute;right:0;bottom:0;width:min(58%,240px);background:#111;color:#F6F1EA;border-radius:16px;padding:18px;display:flex;gap:14px;align-items:stretch;box-shadow:0 24px 50px -20px rgba(17,17,17,.5)}
+.poster-word{writing-mode:vertical-rl;font-family:var(--display);font-weight:800;font-size:clamp(26px,4vw,44px);letter-spacing:.12em;margin:0;line-height:1}
+.poster-list{display:grid;gap:6px;align-content:center;font-size:13px;font-weight:600;margin:0;padding:0;list-style:none}
+.poster-list li::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:8px}
+.bento{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:6px 0 8px}
+.bento-item{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.bento-item:nth-child(odd){background:linear-gradient(150deg,#fff,var(--sand))}
+.bento-item b{font-family:var(--display);font-size:19px;display:block;margin-bottom:4px}
+.bento-item span{color:var(--muted);font-size:13.5px}
+
+/* sections */
+.section{padding:clamp(36px,5vw,72px) 0}
+.section.alt{background:var(--paper-dim)}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:26px;flex-wrap:wrap}
+.section-head h2{font-size:clamp(26px,3.6vw,40px);margin:0}
+.section-head a{font-weight:600;text-decoration:none;color:var(--accent-deep)}
+.section-head a:hover{text-decoration:underline}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;text-decoration:none;display:flex;flex-direction:column;transition:transform .18s ease,box-shadow .18s ease}
+a.card:hover,.card.lift:hover{transform:translateY(-4px);box-shadow:0 14px 34px -18px rgba(26,25,23,.35)}
+.card-cover{aspect-ratio:4/3;background:linear-gradient(160deg,var(--sand),var(--rose));display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:clamp(34px,5vw,48px);color:#fff;letter-spacing:-.02em}
+.card-body{padding:16px 18px 20px}
+.card-cat{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.card-body h3{margin:.35em 0 .3em;font-size:20px}
+.card-body p{color:var(--ink-soft);font-size:14.5px;margin:0}
+.card-meta{color:var(--muted);font-size:13px;margin-top:8px}
+.ico{width:42px;height:42px;border-radius:12px;background:var(--accent-soft);display:grid;place-items:center;font-size:1.15rem;margin-bottom:12px}
+.tool-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.tool-badges span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 16px;font-size:13.5px;font-weight:600;transition:border-color .15s,background .15s}
+.tool-badges span:hover{border-color:var(--accent);background:var(--accent-soft)}
+
+/* project detail */
+.project{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:clamp(22px,4vw,40px);margin-top:34px}
+.project h3{font-size:clamp(24px,3vw,32px)}
+.project p{color:var(--ink-soft);max-width:68ch}
+.meta-table{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 0;margin:22px 0}
+.meta-table dt{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600}
+.meta-table dd{margin:2px 0 0;font-weight:600}
+.flow{list-style:none;margin:28px 0 8px;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;counter-reset:s}
+.flow li{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.flow li::before{counter-increment:s;content:"0" counter(s);font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--accent-deep);display:block;margin-bottom:6px}
+.flow b{font-family:var(--display);display:block;font-size:17px;margin-bottom:2px}
+.flow span{color:var(--muted);font-size:13px;line-height:1.4;display:block}
+.flow li:not(:last-child)::after{content:"→";position:absolute;right:-12px;top:50%;transform:translateY(-50%);background:var(--card);border:1px solid var(--line);border-radius:50%;width:22px;height:22px;display:grid;place-items:center;font-size:12px;color:var(--accent-deep);z-index:1}
+
+/* about */
+.about-split{display:grid;grid-template-columns:1.3fr 1fr;gap:clamp(24px,4vw,56px);align-items:start}
+.usp{font-family:var(--display);font-size:clamp(22px,3vw,30px);font-weight:700;line-height:1.25;margin-bottom:20px}
+.facts{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.facts div{padding:12px 0;border-top:1px solid var(--line)}
+.facts div:first-child{border:none;padding-top:0}
+.facts div:last-child{padding-bottom:0}
+.facts small{display:block;font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--accent-deep);margin-bottom:2px}
+.timeline{list-style:none;margin:0 0 0 7px;padding:0}
+.timeline li{position:relative;padding:0 0 22px 30px;border-left:2px solid var(--line)}
+.timeline li:last-child{padding-bottom:0}
+.timeline li::before{content:"";position:absolute;left:-7px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.timeline .t-period{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-deep);display:block}
+.timeline p{margin:2px 0 0;max-width:62ch}
+
+/* faq */
+details.faq{border-bottom:1px solid var(--line)}
+details.faq summary{cursor:pointer;font-weight:700;font-size:17px;padding:18px 4px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+details.faq summary::-webkit-details-marker{display:none}
+details.faq summary::after{content:"+";font-size:22px;color:var(--accent-deep);flex:none}
+details.faq[open] summary::after{content:"–"}
+details.faq .faq-a{padding:0 4px 20px;color:var(--ink-soft);max-width:62ch}
+
+/* contact & form */
+.contact-link{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;padding:9px 0;overflow-wrap:anywhere}
+.contact-link:hover{color:var(--accent-deep)}
+.contact-split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:start}
+form.stack{display:grid;gap:14px;max-width:640px}
+label{display:grid;gap:6px;font-weight:600;font-size:14.5px}
+input,textarea,select{font:inherit;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);width:100%}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);outline:none}
+textarea{min-height:130px;resize:vertical}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-ok{background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;padding:14px 18px;font-weight:600}
+.note{color:var(--muted);font-size:13.5px;margin:0}
+
+/* footer */
+.site-footer{border-top:1px solid var(--line);margin-top:40px;padding:30px 0 40px;background:var(--paper-dim)}
+.footer-inner{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.footer-inner p{margin:4px 0 0;color:var(--ink-soft);font-size:14px}
+.footer-links{display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-weight:600;font-size:15px}
+.footer-links a{text-decoration:none}
+.footer-links a:hover{color:var(--accent-deep)}
+
+.feature-list{margin:0 0 1em;padding:0;list-style:none;display:grid;gap:8px;max-width:68ch;color:var(--ink-soft)}
+.feature-list li{position:relative;padding-left:22px}
+.feature-list li::before{content:"";position:absolute;left:0;top:.65em;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+
+/* scroll animation (JS adds .js-reveal to <html>, so content stays visible without JS) */
+.js-reveal .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1),box-shadow .18s ease;transition-delay:var(--d,0ms)}
+.js-reveal .reveal.in{opacity:1;transform:none}
+.js-reveal .reveal.in.card:hover{transition-delay:0ms}
+.site-header{transition:box-shadow .25s ease,background .25s ease}
+.site-header.scrolled{box-shadow:0 10px 30px -22px rgba(17,17,17,.4);background:rgba(255,255,255,.88)}
+@media (prefers-reduced-motion:reduce){.js-reveal .reveal{opacity:1;transform:none;transition:none}}
+
+/* responsive */
+@media (max-width:920px){
+  .nav-toggle{display:block}
+  .site-nav ul{display:none;position:absolute;right:16px;top:64px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;flex-direction:column;align-items:stretch;min-width:220px;box-shadow:0 18px 40px -20px rgba(0,0,0,.3)}
+  .site-nav ul.open{display:flex}
+}
+@media (max-width:900px){
+  .hero-split,.about-split,.contact-split{grid-template-columns:1fr}
+  .hero-visual{min-height:400px;max-width:460px}
+  .bento{grid-template-columns:repeat(2,1fr)}
+  .flow{grid-template-columns:1fr 1fr}
+  .flow li:not(:last-child)::after{display:none}
+}
+@media (max-width:720px){.brand-name{display:none}.hero-sub{letter-spacing:.14em}.two-col{grid-template-columns:1fr}}
+@media (max-width:560px){
+  .bento,.flow,.grid{grid-template-columns:1fr}
+  .bento-item b{font-size:17px}
+  .hero-actions .btn{width:100%;justify-content:center}
+  .site-nav .btn-small{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#app">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="#/" aria-label="Home"><span class="brand-mark" aria-hidden="true">N</span><span class="brand-name">Nada Fathy</span></a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="nav-list" aria-label="Menu">☰</button>
+      <ul id="nav-list">
+        <li><a href="#/" data-route="">Home</a></li>
+        <li><a href="#/projects" data-route="projects">Portfolio</a></li>
+        <li><a href="#/about" data-route="about">About</a></li>
+        <li><a href="#/services" data-route="services">Offers</a></li>
+        <li><a href="#/recognition" data-route="recognition">Recognition</a></li>
+        <li><a href="#/contact" data-route="contact">Contact</a></li>
+        <li><a class="btn btn-small" href="#/hire" data-route="hire">Get in touch</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="app" tabindex="-1">
+
+<!-- ================= HOME ================= -->
+<section class="view active" id="view-home" data-title="Nada Fathy — Cross-Platform Mobile App Developer">
+  <div class="wrap hero-split">
+    <span class="blob" style="width:340px;height:340px;background:var(--sand);top:-60px;left:-120px" aria-hidden="true"></span>
+    <div class="hero-copy">
+      <span class="badge-pill"><span class="dot"></span>Available for new projects</span>
+      <h1>Nada Fathy</h1>
+      <p class="hero-sub">FLUTTER &amp; MOBILE APP DEVELOPER</p>
+      <p class="lede">I turn ideas into working cross-platform mobile products through clean, well-architected Flutter development, from local storage and state management to AI-integrated pipelines.</p>
+      <div class="hero-actions">
+        <a class="btn" href="#/projects">Explore Projects <span class="arr">→</span></a>
+        <a class="btn btn-ghost" href="#/hire">Get in touch</a>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <span class="blob" style="width:280px;height:280px;background:var(--rose);bottom:-40px;right:-40px"></span>
+      <div class="arch-frame"><div class="arch-mono">N.</div></div>
+      <div class="poster-card"><p class="poster-word">NADA</p><ul class="poster-list"><li>Flutter</li><li>Dart</li><li>Cubit</li><li>REST APIs</li></ul></div>
+    </div>
+  </div>
+  <div class="wrap"><div class="bento">
+    <div class="bento-item"><b>Flutter &amp; Dart</b><span>Cross-Platform Mobile Apps</span></div>
+    <div class="bento-item"><b>1st Place</b><span>Al-Azhar Exhibition, Team Project</span></div>
+    <div class="bento-item"><b>DEPI Trainee</b><span>Digital Egypt Pioneers Initiative</span></div>
+    <div class="bento-item"><b>Team Leader</b><span>Led the Flutter Team on Kinetix</span></div>
+  </div></div>
+
+  <div class="section"><div class="wrap">
+    <div class="section-head"><h2>Selected Work</h2><a href="#/projects">Check it out →</a></div>
+    <div class="grid">
+      <a class="card" href="#/projects">
+        <div class="card-cover">Kinetix</div>
+        <div class="card-body"><span class="card-cat">Flutter · AI · CNC</span>
+        <h3>Kinetix — AI-to-CNC Design Pipeline</h3>
+        <p>A mobile app that bridges design and fabrication: draw, upload or capture an image, let AI process it, and watch a CNC machine bring it to life.</p>
+        <div class="card-meta">Flutter Team Leader</div></div>
+      </a>
+      <a class="card" href="#/projects">
+        <div class="card-cover">Walletly</div>
+        <div class="card-body"><span class="card-cat">Flutter · GetX · Hive</span>
+        <h3>Walletly — Offline Expense Manager</h3>
+        <p>A fully offline personal expense manager: track spending by category, stay within a monthly budget, and see where your money goes in a dashboard of charts.</p>
+        <div class="card-meta">Material 3 · Light &amp; dark mode</div></div>
+      </a>
+      <a class="card" href="#/projects">
+        <div class="card-cover">Notes</div>
+        <div class="card-body"><span class="card-cat">Flutter · GetX · SQLite</span>
+        <h3>Notes App — Location-Aware Notes</h3>
+        <p>A notes app that tags each note with where it was written, stores everything locally with SQLite (floor), and clears all notes with a shake of the device.</p>
+        <div class="card-meta">Reverse geocoding · Shake-to-delete</div></div>
+      </a>
+    </div>
+  </div></div>
+
+  <div class="section alt"><div class="wrap">
+    <div class="section-head"><h2>Services &amp; Offers</h2><a href="#/services">All services →</a></div>
+    <p style="max-width:62ch">Designed around what your product needs. Choose the support that fits your project.</p>
+    <div class="grid">
+      <div class="card lift"><div class="card-body"><h3>Flutter App Development</h3><p>End-to-end mobile apps built with Dart, from UI to state management with Cubit and clean, modular architecture.</p></div></div>
+      <div class="card lift"><div class="card-body"><h3>API &amp; AI Integration</h3><p>Connecting Flutter apps to backends and AI models over HTTP, including FastAPI-powered pipelines.</p></div></div>
+      <div class="card lift"><div class="card-body"><h3>Local Storage Solutions</h3><p>Shared Preferences, Hive, SQLite, and Secure Storage, choosing the right fit per app.</p></div></div>
+    </div>
+  </div></div>
+
+  <div class="section"><div class="wrap" style="max-width:74ch">
+    <div class="section-head"><h2>Questions Clients Usually Ask.</h2><a href="#/hire">Ask yours →</a></div>
+    <details class="faq"><summary>Can you build a complete mobile app from scratch?</summary>
+      <div class="faq-a"><p>Yes. I build cross-platform apps with Flutter and Dart, covering the UI, state management with Cubit, and the data layer, with a clean and modular structure.</p></div></details>
+    <details class="faq"><summary>Can you connect the app to my backend or an AI model?</summary>
+      <div class="faq-a"><p>Yes. I've integrated Flutter with a FastAPI backend and AI models over HTTP, as in Kinetix.</p></div></details>
+    <details class="faq"><summary>What do you need from me to start?</summary>
+      <div class="faq-a"><p>A short brief with your goals, the platforms you're targeting, any designs or references you like, and your timeline. From there we define the scope together.</p></div></details>
+  </div></div>
+
+  <div class="section alt"><div class="wrap">
+    <div class="eyebrow">About</div>
+    <h2 style="font-size:clamp(26px,3.6vw,40px)">Code with structure.</h2>
+    <p style="max-width:62ch">Computer Science student at Ain Shams University with a focus on cross-platform mobile development using Flutter &amp; Dart, hands-on experience leading a mobile team, and a love for OOP and data structures &amp; algorithms.</p>
+    <p><a href="#/about" style="font-weight:600">More about me, skills &amp; education →</a></p>
+    <div class="hero-actions"><a class="btn" href="#/hire">Work With Me</a><a class="btn btn-ghost" href="#/contact">Contact</a></div>
+  </div></div>
+</section>
+
+<!-- ================= PROJECTS ================= -->
+<section class="view" id="view-projects" data-title="Portfolio — Nada Fathy">
+  <div class="wrap page">
+    <div class="eyebrow">Portfolio</div>
+    <h2 class="title">Selected work</h2>
+    <p class="lede">Projects where I took ownership of the mobile side: architecture, integration and delivery.</p>
+
+    <article class="project">
+      <span class="card-cat">Flutter · FastAPI · AI · CNC</span>
+      <h3>Kinetix — AI-to-CNC Design Pipeline</h3>
+      <dl class="meta-table">
+        <div><dt>Role</dt><dd>Flutter Team Leader</dd></div>
+        <div><dt>Platform</dt><dd>Mobile (Flutter)</dd></div>
+        <div><dt>Backend</dt><dd>FastAPI</dd></div>
+      </dl>
+      <p>Led the development of Kinetix, a CNC-integrated mobile application that bridges design and fabrication through AI. Users draw freehand, upload an image, or capture one with the camera, and send it to an AI model over HTTP. The AI processes the image and sends it on to a CNC machine, which brings the design to life.</p>
+      <p>Also built a prompt-based image generation feature: the AI generates an image from text, and the CNC draws it automatically. The backend runs on FastAPI, keeping the full pipeline seamless and efficient.</p>
+      <ol class="flow" aria-label="Kinetix pipeline">
+        <li><b>Input</b><span>Draw, upload, camera, or a text prompt</span></li>
+        <li><b>HTTP</b><span>Flutter sends it to the FastAPI backend</span></li>
+        <li><b>AI</b><span>Model processes or generates the image</span></li>
+        <li><b>CNC</b><span>Machine draws the final design</span></li>
+      </ol>
+      <div class="tool-badges"><span>Flutter</span><span>FastAPI</span><span>HTTP</span><span>AI Integration</span><span>CNC</span></div>
+    </article>
+
+    <article class="project">
+      <span class="card-cat">Flutter · GetX · Hive · Material 3</span>
+      <h3>Walletly — Offline Expense Manager App</h3>
+      <dl class="meta-table">
+        <div><dt>Type</dt><dd>Personal project</dd></div>
+        <div><dt>Platform</dt><dd>Mobile (Flutter)</dd></div>
+        <div><dt>Storage</dt><dd>Hive (fully offline)</dd></div>
+      </dl>
+      <p>Walletly is a fully offline personal expense manager built with Flutter. It helps users track daily spending, organize expenses by category, and stay within a monthly budget, all without needing an internet connection.</p>
+      <ul class="feature-list">
+        <li>Add, edit and delete expenses with categories such as Food, Transportation, Shopping, and more</li>
+        <li>Monthly budget with a clear view of what is spent and what is left</li>
+        <li>Dashboard with charts that visualize spending by category</li>
+        <li>Local data storage with Hive, so everything works offline and loads instantly</li>
+        <li>Clean Material 3 UI with light and dark mode</li>
+        <li>State management with GetX for a responsive, well-structured codebase</li>
+      </ul>
+      <p>Built with a clean architecture and a polished UI, with a focus on understanding the why behind each design decision.</p>
+      <div class="tool-badges"><span>Flutter</span><span>Dart</span><span>GetX</span><span>Hive</span><span>Material Design 3</span><span>State Management</span><span>Local Database</span><span>Mobile App Development</span><span>UI/UX Design</span></div>
+    </article>
+
+    <article class="project">
+      <span class="card-cat">Flutter · GetX · SQLite (floor)</span>
+      <h3>Notes App — Location-Aware Notes in Flutter</h3>
+      <dl class="meta-table">
+        <div><dt>Type</dt><dd>Mobile app</dd></div>
+        <div><dt>Platform</dt><dd>Mobile (Flutter)</dd></div>
+        <div><dt>Storage</dt><dd>SQLite via floor</dd></div>
+      </dl>
+      <p>A notes application built with Flutter that lets users add, edit and delete notes, and attach to each note the location where it was written. Data is stored in a local SQLite database through the floor library, with GetX handling state management.</p>
+      <ul class="feature-list">
+        <li>Automatic location capture at writing time, resolved to a readable address with reverse geocoding</li>
+        <li>Shake-to-delete: clear all notes with a shake of the device</li>
+        <li>Fully custom UI/UX with smooth page transitions and interactions</li>
+        <li>Performance tuning, including fewer unnecessary database reads</li>
+        <li>Comprehensive error handling for location failures, denied permissions, and unavailable services</li>
+      </ul>
+      <div class="tool-badges"><span>Flutter</span><span>Dart</span><span>GetX</span><span>floor</span><span>SQLite</span><span>Geolocation</span><span>Reverse Geocoding</span><span>Error Handling</span></div>
+    </article>
+  </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="view" id="view-about" data-title="About — Nada Fathy">
+  <div class="wrap page">
+    <div class="eyebrow">About</div>
+    <h2 class="title">Code with structure.</h2>
+    <div class="about-split">
+      <div>
+        <p class="usp">I help teams turn ideas into working mobile products through clean, well-architected Flutter development.</p>
+        <p class="lede">Computer Science student at Ain Shams University with a strong academic standing and a focus on cross-platform mobile development using Flutter &amp; Dart. Passionate about software engineering, object-oriented programming, and data structures &amp; algorithms, with hands-on experience leading a mobile team, building AI-integrated apps, and competitive programming.</p>
+      </div>
+      <aside class="facts">
+        <div><small>EDUCATION</small>B.Sc. Computer Science, Ain Shams University (in progress)</div>
+        <div><small>ROLE</small>Flutter Vice Head, RoboTech ASU (2026)</div>
+        <div><small>FOCUS</small>Flutter &amp; Dart, cross-platform mobile</div>
+        <div><small>FUNDAMENTALS</small>OOP · Data Structures &amp; Algorithms · C++</div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="section alt"><div class="wrap">
+    <div class="section-head"><h2>Skills</h2></div>
+    <div class="grid">
+      <div class="card lift"><div class="card-body"><div class="ico">📱</div><h3>Cross-platform mobile</h3><p>Robust apps with Flutter and Dart: state management, API integration, and local storage.</p><div class="tool-badges"><span>Flutter</span><span>Dart</span><span>REST APIs</span></div></div></div>
+      <div class="card lift"><div class="card-body"><div class="ico">🧠</div><h3>Engineering fundamentals</h3><p>A solid foundation in OOP, data structures &amp; algorithms, and problem-solving across programming contexts.</p><div class="tool-badges"><span>OOP</span><span>DSA</span><span>C++</span></div></div></div>
+      <div class="card lift"><div class="card-body"><div class="ico">🎤</div><h3>Training &amp; instruction</h3><p>Intensive software engineering programs, plus delivering technical workshops on mobile development.</p><div class="tool-badges"><span>Workshops</span><span>Mentorship</span></div></div></div>
+    </div>
+  </div></div>
+
+  <div class="section"><div class="wrap">
+    <div class="section-head"><h2>Experience</h2></div>
+    <ul class="timeline">
+      <li><span class="t-period">2026</span><p>Serving as Flutter Vice Head at RoboTech ASU, supporting the Flutter track and its members.</p></li>
+      <li><span class="t-period">2026</span><p>Won 1st place at Al-Azhar Exhibition as part of a team project, receiving an official certificate of appreciation.</p></li>
+      <li><span class="t-period">2026</span><p>Selected for the government-sponsored Digital Egypt Pioneers Initiative (DEPI) as a Cross-Platform Mobile App Developer Trainee.</p></li>
+      <li><span class="t-period">2026</span><p>Delivered a technical workshop on Local Storage in Flutter and led introductory programming sessions as a RoboTech Technical Instructor.</p></li>
+      <li><span class="t-period">2025</span><p>Completed comprehensive technical training in Flutter mobile development and state management as a RoboTech Academic Member.</p></li>
+    </ul>
+  </div></div>
+</section>
+
+<!-- ================= SERVICES ================= -->
+<section class="view" id="view-services" data-title="Offers — Nada Fathy">
+  <div class="wrap page">
+    <div class="eyebrow">Offers</div>
+    <h2 class="title">How I can help</h2>
+    <p class="lede">Designed around what your product needs. Four ways we can work together.</p>
+    <div class="grid" style="margin-top:32px">
+      <div class="card lift"><div class="card-body"><div class="ico">📲</div><h3>Flutter App Development</h3><p>End-to-end mobile apps built with Dart, from UI to state management with Cubit and clean, modular architecture.</p></div></div>
+      <div class="card lift"><div class="card-body"><div class="ico">🔌</div><h3>API &amp; AI Integration</h3><p>Connecting Flutter apps to backends and AI models over HTTP, including FastAPI-powered pipelines.</p></div></div>
+      <div class="card lift"><div class="card-body"><div class="ico">💾</div><h3>Local Storage Solutions</h3><p>Shared Preferences, Hive, SQLite, and Secure Storage, choosing and implementing the right fit per app.</p></div></div>
+      <div class="card lift"><div class="card-body"><div class="ico">🎓</div><h3>Technical Workshops</h3><p>Hands-on sessions and mentorship on Flutter fundamentals for teams and trainees.</p></div></div>
+    </div>
+    <div class="hero-actions"><a class="btn" href="#/hire">Start a project <span class="arr">→</span></a></div>
+  </div>
+</section>
+
+<!-- ================= RECOGNITION ================= -->
+<section class="view" id="view-recognition" data-title="Recognition — Nada Fathy">
+  <div class="wrap page">
+    <div class="eyebrow">Recognition</div>
+    <h2 class="title">Achievements</h2>
+    <p class="lede">Moments that mark the journey so far.</p>
+    <div class="grid" style="margin-top:32px">
+      <div class="card lift"><div class="card-body"><div class="ico">🏆</div><h3>1st Place — Al-Azhar Exhibition</h3><p>Awarded an official certificate of appreciation as part of a team project.</p></div></div>
+      <div class="card lift"><div class="card-body"><div class="ico">🏅</div><h3>ECPC Qualification</h3><p>Participated in the ECPC qualification round.</p></div></div>
+      <div class="card lift"><div class="card-body"><div class="ico">🚀</div><h3>Digital Egypt Pioneers Initiative</h3><p>Selected for the government-sponsored program as a Cross-Platform Mobile App Developer Trainee.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="view" id="view-contact" data-title="Contact — Nada Fathy">
+  <div class="wrap page">
+    <div class="eyebrow">Contact</div>
+    <h2 class="title">Let's talk</h2>
+    <p class="lede">Have something in mind, or just want to say hello? Reach out on any of these.</p>
+    <div class="contact-split" style="margin-top:28px">
+      <div>
+        <a class="contact-link" href="mailto:nada94086@gmail.com">✉ nada94086@gmail.com</a>
+        <a class="contact-link" href="https://linkedin.com/in/nada-fathy1" target="_blank" rel="noopener">in LinkedIn ↗</a>
+        <a class="contact-link" href="https://github.com/nadaFM-cs" target="_blank" rel="noopener">⌥ GitHub ↗</a>
+      </div>
+      <div><p>Prefer to send details up front? Share a short project brief and I'll get back to you.</p><a class="btn" href="#/hire">Send a project brief <span class="arr">→</span></a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HIRE ================= -->
+<section class="view" id="view-hire" data-title="Get in touch — Nada Fathy">
+  <div class="wrap page">
+    <div class="eyebrow">Get in touch</div>
+    <h2 class="title">Work with me</h2>
+    <p class="lede">Tell me a bit about your project. This opens your email app with the message ready to send.</p>
+    <form class="stack" id="hireForm" style="margin-top:28px">
+      <div class="two-col">
+        <label>Your name<input id="f-name" name="name" required autocomplete="name"></label>
+        <label>Your email<input id="f-email" name="email" type="email" required autocomplete="email"></label>
+      </div>
+      <label>Project type
+        <select id="f-type" name="type">
+          <option>Flutter app development</option>
+          <option>API &amp; AI integration</option>
+          <option>Local storage solution</option>
+          <option>Technical workshop</option>
+          <option>Something else</option>
+        </select>
+      </label>
+      <label>Message<textarea id="f-msg" name="msg" required placeholder="What are you building? Timeline, platforms, anything useful."></textarea></label>
+      <div><button class="btn" type="submit">Send message <span class="arr">→</span></button></div>
+      <p class="note" id="formNote">Or email me directly: nada94086@gmail.com</p>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div><strong>Nada Fathy</strong><p>© 2026 Nada Fathy. Flutter apps, clean architecture, AI integration.</p></div>
+    <div class="footer-links">
+      <a href="#/projects">Projects</a><a href="#/contact">Contact</a><a href="#/hire">Work With Me</a>
+      <a href="https://linkedin.com/in/nada-fathy1" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/nadaFM-cs" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  document.documentElement.classList.add('spa');
+  var views = {'':'view-home','projects':'view-projects','about':'view-about','services':'view-services','recognition':'view-recognition','contact':'view-contact','hire':'view-hire'};
+  var links = document.querySelectorAll('#nav-list a[data-route]');
+  var list = document.getElementById('nav-list');
+  var toggle = document.getElementById('navToggle');
+  var app = document.getElementById('app');
+  var first = true;
+
+  function route(){
+    var key = (location.hash.replace(/^#\/?/, '') || '').split('?')[0];
+    if(!(key in views)) key = '';
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+    var el = document.getElementById(views[key]);
+    el.classList.add('active');
+    document.title = el.getAttribute('data-title');
+    links.forEach(function(a){
+      if(a.getAttribute('data-route') === key) a.setAttribute('aria-current','page');
+      else a.removeAttribute('aria-current');
+    });
+    list.classList.remove('open');
+    toggle.setAttribute('aria-expanded','false');
+    window.scrollTo(0,0);
+    if(!first) app.focus({preventScroll:true});
+    first = false;
+  }
+  /* light scroll-reveal: fade/slide elements in as they enter the viewport */
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var io = null;
+  if(!reduce && 'IntersectionObserver' in window){
+    document.documentElement.classList.add('js-reveal');
+    io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    },{threshold:.12, rootMargin:'0px 0px -40px 0px'});
+    var targets = document.querySelectorAll('.bento-item,.card,.project,.section-head,.faq,.timeline li,.facts,.flow li,.page .title,.page .lede,.contact-link,.hero-actions');
+    targets.forEach(function(el){
+      el.classList.add('reveal');
+      var sibs = el.parentElement ? Array.prototype.indexOf.call(el.parentElement.children, el) : 0;
+      el.style.setProperty('--d', Math.min(sibs,5)*70 + 'ms');
+      io.observe(el);
+    });
+  }
+
+  var header = document.querySelector('.site-header');
+  function onScroll(){ header.classList.toggle('scrolled', window.scrollY > 8); }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  window.addEventListener('hashchange', route);
+  route();
+
+  toggle.addEventListener('click', function(){
+    var open = list.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  document.getElementById('hireForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var f = e.target;
+    var subject = 'Project inquiry: ' + f.type.value;
+    var body = 'Hi Nada,\n\n' + f.msg.value + '\n\n— ' + f.name.value + '\n' + f.email.value;
+    location.href = 'mailto:nada94086@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    var n = document.getElementById('formNote');
+    n.textContent = 'Opening your email app… if nothing happens, write to nada94086@gmail.com.';
+    n.className = 'note form-ok';
+  });
+})();
+</script>
+</body>
+</html>
